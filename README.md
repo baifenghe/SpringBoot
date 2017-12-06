@@ -29,24 +29,44 @@ NONE：这是个神奇的配置，跟Mock一样也不提供真实的Servlet环�
 classes如果想要加载一个特定的配置，可以用@SpringBootTest的classes属性。在这个实例中，省略classes就意味着测试要首次尝试从任意一个inner-classes中加载@configuration，如果这个尝试失败了，它会在你主要的@SpringBootApplicationclass中进行搜索。
 
 
+#### 关于日志
+1.4版本后改了很多东西，如果想用log4j，就要引入log4j2
+```
+<dependency> 
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-log4j2</artifactId>
+</dependency>
+```
+在引入了log4j依赖之后，只需要在src/main/resources目录下加入log4j-spring.properties配置文件，就可以开始对应用的日志进行配置使用。
+在开发环境，我们只是输出到控制台没有问题，但是到了生产或测试环境，或许持久化日志内容，方便追溯问题原因。可以通过添加如下的appender内容，按天输出到不同的文件中去，同时还需要为log4j.rootCategory添加名为file的appender，这样root日志就可以输出到logs/springboot.log文件中了。
+```
+# LOG4J配置
+log4j.rootCategory=INFO,stdout,file
+```
+我们还可以对日志进行分类输出，输出到数据库等等。
 
+#### 多环境配置
+相信使用过一段时间Spring Boot的用户，一定知道这条命令：java -jar xxx.jar --server.port=8888，通过使用--server.port属性来设置xxx.jar应用的端口为8888。
+在命令行运行时，连续的两个减号--就是对application.properties中的属性值进行赋值的标识。
+在SpringBoot中使用多环境配置的前提是，配置文件名需要满足application-{profile}.properties的格式，其中{profile}对应你的环境标识，比如：
+- application-dev.properties：开发环境
+- application-test.properties：测试环境
+- application-prod.properties：生产环境
+至于哪个具体的配置文件会被加载，需要在application.properties文件中通过spring.profiles.active属性来设置，其值对应{profile}值。
+如：spring.profiles.active=test就会加载application-test.properties配置文件内容
+在这三个文件均都设置不同的server.port属性，如：dev环境设置为8080，test环境设置为9090，prod环境设置为80，application.properties中设置spring.profiles.active=dev，就是说默认以dev环境设置。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+将项目打成jar包，执行java -jar xxx.jar --spring.profiles.active=test，可以观察到服务端口被设置为9090，也就是测试环境的配置（test）。
+**同样我们可以使用其来限制不同的业务路逻辑，使用@Profile即可，还可以控制日志输出级别**
+#### 注意
+```java -jar xxx.jar  --spring.profiles.active=prod```，我们在java Run configurations配置的启动参数在单元测试中是无效的，如果想在单元测试中激活profiles的话，那么是需要进行配置的：
+```
+/*
+ * @ActiveProfiles，可以指定一个或者多个 profile，
+ * 这样我们的测试类就仅仅加载这些名字的 profile 中定义的 bean 实例。
+ * 这里激活application-prod.properties配置文件.
+ */
+@ActiveProfiles("prod")
+public class AppTest...
+```
 
