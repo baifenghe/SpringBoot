@@ -70,3 +70,39 @@ log4j.rootCategory=INFO,stdout,file
 public class AppTest...
 ```
 
+#### 内嵌Server配置
+```
+#项目contextPath，一般在正式发布版本中，我们不配置
+server.context-path=/springboot
+# 错误页：指定发生错误时，跳转的URL。请查看BasicErrorController。
+server.error.path=/error
+# 服务端口，默认为8080
+server.port=8080
+# session最大超时时间(分钟)，默认为30
+server.session-timeout=60
+# 该服务绑定IP地址，启动服务器时如本机不是该IP地址则抛出异常启动失败，只有特殊需求的情况下才配置
+# server.address=192.168.16.11
+
+# tomcat最大线程数，默认为200
+server.tomcat.max-threads=800
+# tomcat的URI编码
+server.tomcat.uri-encoding=UTF-8
+# 存放Tomcat的日志、Dump等文件的临时文件夹，默认为系统的tmp文件夹（如：C:\Users\Angel\AppData\Local\Temp）
+server.tomcat.basedir=D:/springboot-tomcat-tmp
+# 打开Tomcat的Access日志，并可以设置日志格式的方法：
+#server.tomcat.access-log-enabled=true
+#server.tomcat.access-log-pattern=
+# accesslog目录，默认在basedir/logs
+#server.tomcat.accesslog.directory=
+# 日志文件目录
+logging.path=H:/springboot-tomcat-tmp
+# 日志文件名称，默认为spring.log
+logging.file=myapp.log
+
+```
+
+#### 使用@Async实现异步调用
+ “异步调用”对应的是“同步调用”，同步调用指程序按照定义顺序依次执行，每一行程序都必须等待上一行程序执行完成之后才能执行；异步调用指程序在顺序执行时，不等待异步调用的语句返回结果就执行后面的程序。
+ 加上@@Async注解后，就能简单的将原来的同步函数变为异步函数，为了让@Async注解能够生效，还需要在Spring Boot的主程序中配置@EnableAsync
+
+
