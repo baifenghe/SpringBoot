@@ -106,3 +106,29 @@ logging.file=myapp.log
  加上@@Async注解后，就能简单的将原来的同步函数变为异步函数，为了让@Async注解能够生效，还需要在Spring Boot的主程序中配置@EnableAsync
 
 
+#### 自定义属性
+
+```@Value(“${key:defaultVlaue}”) ```的形式进行默认值设置；
+我们还可以定义数组，定义List<String>接收就可以了；
+**松散的绑定；**Spring Boot使用宽松的规则用于绑定属性到@ConfigurationProperties beans,所以Environment属性名和bean属性名不需要精确匹配。常见的示例中有虚线分隔的（比如，context-path绑定到contextPath），环境属性大写转为小写字母（比如：PORT绑定port）。
+这就是为什么context-path,spring.jpa.show-sql，其实是被解释为contextPath和showSql了，不然要是指定定义一个show-sql变量是无法编译通过的。
+我们还可以自定义**随机数**，
+我们可以自定义一个company.properties文件，通过@ConfigurationProperties(prefix = "com.kfit.company",locations="classpath:company.properties")导入
+之后我们在App.java启动类中或者其它的类也是可以的。我们甚至可以@Max(value = 99)，对属性进行校验。
+
+
+#### mybatis的一些小问题
+当 insert 语句中只有一个参数的，对应的void save方法不需要做任何特殊处理（不需要加@Param也是可以对应上的），当有多个参数的时候，需要使用@Param注解进行字段的对应。。
+
+
+#### IOC
+IOC全称Inversion of Control，控制反转，这是一种设计思想。在Java开发中，ioc意味着将你设计好的对象交给容器控制，而不是传统的在你的对象内部直接控制。
+
+
+#### SpringBoot默认是动态代理模式
+
+
+#### Swagger2
+Swagger 是一个规范和完整的框架，用于生成、描述、调用和可视化 RESTful 风格的 Web 服务。总体目标是使客户端和文件系统作为服务器以同样的速度来更新。文件的方法，参数和模型紧密集成到服务器端的代码，允许API来始终保持同步。Swagger 让部署管理和使用功能强大的API从未如此简单。
+
+
