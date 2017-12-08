@@ -132,3 +132,33 @@ IOC全称Inversion of Control，控制反转，这是一种设计思想。在Jav
 Swagger 是一个规范和完整的框架，用于生成、描述、调用和可视化 RESTful 风格的 Web 服务。总体目标是使客户端和文件系统作为服务器以同样的速度来更新。文件的方法，参数和模型紧密集成到服务器端的代码，允许API来始终保持同步。Swagger 让部署管理和使用功能强大的API从未如此简单。
 
 
+#### WebJars
+Spring Boot 默认将 /webjars/** 映射到 classpath:/META-INF/resources/webjars/ ，结合我们上面讲到的访问资源的规则，便可以得知我们在页面中引入jquery.js的方法为：
+```<script type="text/javascript" src="/webjars/jquery/2.1.4/jquery.js"></script>```，但是我们实际开发中，可能会遇到升级版本号的情况，如果我们有100多个页面，几乎每个页面上都有按上面引入jquery.js 那么我们要把版本号更换为3.0.0，一个一个替换显然不是最好的办法。 使用webjars的webjars-locator就可以解决以上的问题。
+```
+<dependency>
+   <groupId>org.webjars</groupId>
+   <artifactId>webjars-locator</artifactId>
+</dependency>
+
+@Controller
+public class WebJarsController {
+    privatefinal WebJarAssetLocator assetLocator = new WebJarAssetLocator();
+    @ResponseBody
+    @RequestMapping("/webjarslocator/{webjar}/**")
+    public ResponseEntity<Object> locateWebjarAsset(@PathVariable String webjar, HttpServletRequest request) {
+        try {
+            String mvcPrefix = "/webjarslocator/" + webjar + "/"; // This prefix must match the mapping path!
+            String mvcPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+            String fullPath = assetLocator.getFullPath(webjar, mvcPath.substring(mvcPrefix.length()));
+            return new ResponseEntity<>(new ClassPathResource(fullPath), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+}
+
+<script type="text/javascript" src="/webjarslocator/jquery/jquery.js"></script>
+```
+转自 http://412887952-qq-com.iteye.com/blog/2342354
+
